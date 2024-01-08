@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_login_project/core/base/exception/app_exception.dart';
+import 'package:riverpod_login_project/feature/detail_page/home_detail_view.dart';
 import 'package:riverpod_login_project/feature/home/controller/home_provider.dart';
 import 'package:riverpod_login_project/feature/home/model/home_model.dart';
 import 'package:riverpod_login_project/product/const/padding/app_paddings.dart';
@@ -49,6 +50,8 @@ class _ListBodyWidget extends StatelessWidget {
           HomeModel data = dataList[index];
           return Card(
             child: ListTile(
+              onTap: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => HomeDetailView(user: data))),
               leading: Image.network(data.avatar!),
               title: Text(data.email!),
               subtitle: Text('${data.first_name!} ${data.last_name!}'),
