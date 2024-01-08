@@ -5,7 +5,7 @@ import 'package:riverpod_login_project/product/const/padding/app_paddings.dart';
 import 'package:riverpod_login_project/product/widget/button/custom_button.dart';
 import 'package:riverpod_login_project/product/widget/custom_textform_field.dart';
 import 'package:riverpod_login_project/product/extension/regex/regex.dart';
-
+import 'package:riverpod_login_project/feature/home/view/home_view.dart';
 part './login_widget.dart';
 
 class LoginView extends ConsumerWidget {
@@ -29,9 +29,12 @@ class LoginView extends ConsumerWidget {
               CommonButton(
                   text: 'login',
                   onPressed: () async {
-                    if (ref.read(userProvider.notifier).formKey.currentState!.validate()) {
-                      ref.read(userProvider.notifier).login(context);
-                    }
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => const HomeView()),
+                        (Route<dynamic> route) => false);
+                    // if (ref.read(userProvider.notifier).formKey.currentState!.validate()) {
+                    //   ref.read(userProvider.notifier).login(context);
+                    // }
                   })
             ],
           ),

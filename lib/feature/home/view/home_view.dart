@@ -1,39 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_login_project/feature/home/controller/home_controller.dart';
+import 'package:riverpod_login_project/core/base/exception/app_exception.dart';
+import 'package:riverpod_login_project/feature/home/controller/home_provider.dart';
 import 'package:riverpod_login_project/feature/home/model/home_model.dart';
 import 'package:riverpod_login_project/product/const/padding/app_paddings.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends ConsumerWidget {
   const HomeView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _data = ref.watch(userDataProvider);
     return SafeArea(
       child: Scaffold(
-          appBar: AppBar(),
-          body: const Padding(
-            padding: AppPadding.lowHorizontal(),
-            child: _CustomWidget(),
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            title: const Text('RIVERPOD '),
+            centerTitle: true,
+          ),
+          body: Padding(
+            padding: const AppPadding.lowHorizontal(),
+            child: _data.when(
+                data: (_data) {
+                  List<HomeModel> dataList = _data.fold(
+                    (error) => throw const ServerException(
+                        message: "Server Exception:", statusCode: '505'),
+                    (list) => list,
+                  );
+                  return _ListBodyWidget(dataList: dataList);
+                },
+                error: (error, __) => _ErrorWidget(errorMessage: error.toString()),
+                loading: () => const _LoadingWidget()),
           )),
     );
-  }
-}
-
-class _CustomWidget extends ConsumerWidget {
-  const _CustomWidget();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final _provider = ref.watch(fetchProvider);
-    return _provider.when(
-        data: (data) {
-          ref.refresh(fetchProvider);
-          final dataList = ref.watch(homeProvider.notifier).dataList;
-          return _ListBodyWidget(dataList: dataList);
-        },
-        error: (_, __) => const _ErrorWidget(),
-        loading: () => const _LoadingWidget());
   }
 }
 
@@ -47,12 +46,12 @@ class _ListBodyWidget extends StatelessWidget {
     return ListView.builder(
         itemCount: dataList.length,
         itemBuilder: (context, index) {
-          final list = dataList;
+          HomeModel data = dataList[index];
           return Card(
             child: ListTile(
-              leading: Image.network(list[index].avatar!),
-              title: Text(list[index].email!),
-              subtitle: Text('${list[index].first_name!} ${list[index].last_name!}'),
+              leading: Image.network(data.avatar!),
+              title: Text(data.email!),
+              subtitle: Text('${data.first_name!} ${data.last_name!}'),
             ),
           );
         });
@@ -60,12 +59,13 @@ class _ListBodyWidget extends StatelessWidget {
 }
 
 class _ErrorWidget extends StatelessWidget {
-  const _ErrorWidget();
+  final String errorMessage;
+  const _ErrorWidget({required this.errorMessage});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('HATA MEYDANA GELDI'),
+    return Center(
+      child: Text(errorMessage),
     );
   }
 }

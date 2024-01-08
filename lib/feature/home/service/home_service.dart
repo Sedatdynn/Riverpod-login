@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_login_project/core/base/exception/app_exception.dart';
 import 'package:riverpod_login_project/core/network/network_constants.dart';
 import 'package:riverpod_login_project/feature/home/model/data_model.dart';
 import 'package:riverpod_login_project/feature/home/model/home_model.dart';
 import 'package:riverpod_login_project/feature/home/service/i_home_service.dart';
+import 'package:riverpod_login_project/product/global/network/network_manager.dart';
 import 'package:riverpod_login_project/product/utility/typedef/typedef.dart';
 
 class HomeService extends IHomeService {
@@ -32,3 +34,5 @@ class HomeService extends IHomeService {
     }
   }
 }
+
+final userProvider = Provider<HomeService>((ref) => HomeService(NetworkManager.instance.service));
